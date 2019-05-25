@@ -7,19 +7,25 @@ import axios from 'axios';
 
 const App = () => {
   const [text, setText] = useState([]);
+
   useEffect(() => {
     axios
-      .get('https://cors-anywhere.herokuapp.com/https://litipsum.com/api')
-      .then(res => setText(res.data.split(' ')))
+      .get(
+        'https://cors-anywhere.herokuapp.com/http://www.randomtext.me/api/gibberish/p-1/200-250'
+      )
+      .then(res => setText(removeChars(res.data.text_out.split(' '))))
       .catch(err => console.log(err));
   }, []);
 
-  return (
-    <div className="App">
-      <TypingText text={text} />
-      <TypingWindow />
-    </div>
-  );
+  const removeChars = text => {
+    console.log('ok');
+    const filtered = text.filter(word => {
+      return !word.includes('<p>') && !word.includes('</p>');
+    });
+    return filtered;
+  };
+
+  return <div className="App">{text !== [] && <TypingText text={text} />}</div>;
 };
 
 export default App;
