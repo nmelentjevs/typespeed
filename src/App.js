@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import TypingWindow from './components/TypingWindow';
 import TypingText from './components/TypingText';
 
 import axios from 'axios';
@@ -22,7 +21,6 @@ const App = () => {
   };
 
   const removeChars = text => {
-    console.log('ok');
     const filtered = text.filter(word => {
       word.replace(' ', '');
       return !word.includes('<p>') && !word.includes('</p>');

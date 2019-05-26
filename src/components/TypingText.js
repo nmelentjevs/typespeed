@@ -3,10 +3,14 @@ import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
-import styled from 'styled-components';
-
 import Card from 'react-bootstrap/Card';
 import Results from './Results';
+
+// Styles
+
+import Centered from './styledComponents/Centered';
+import Display from './styledComponents/Display';
+import WordsColumn from './styledComponents/WordsColumn';
 
 const TypingText = ({ text, getText }) => {
   const [correct, setCorrect] = useState([]);
@@ -25,7 +29,7 @@ const TypingText = ({ text, getText }) => {
   useEffect(() => {
     let correctArray = [];
     text.map(word => {
-      correctArray.push(0);
+      return correctArray.push(0);
     });
     correctArray[0] = 'active';
     setCorrect(correctArray);
@@ -62,7 +66,9 @@ const TypingText = ({ text, getText }) => {
     text[inputWords.length].split('').map(letter => letters.push(letter));
     setCurrentWord(e.target.value);
     letters.map((letter, i) => {
-      letterResult.push(e.target.value.replace(' ', '')[i] === letters[i]);
+      return letterResult.push(
+        e.target.value.replace(' ', '')[i] === letters[i]
+      );
     });
     setLetterCorrect(letterResult);
     setCount(characterCount(inputWords));
@@ -113,17 +119,18 @@ const TypingText = ({ text, getText }) => {
   };
 
   const restart = () => {
-    getText();
     setFinished(false);
     setStarted(true);
     setTimer(0);
     setCount(0);
     setCurrentWord('');
     setInputWords([]);
+    setCorrect([]);
+    getText();
   };
 
   const calculateAccuracy = () => {
-    return (
+    const accuracy = (
       (correct.filter(result => {
         return result === true;
       }).length /
@@ -135,11 +142,14 @@ const TypingText = ({ text, getText }) => {
           }).length)) *
       100
     ).toFixed(1);
+
+    if (accuracy === 'NaN') return 0;
+    return accuracy;
   };
 
   return (
     <>
-      <div
+      <Display
         style={{
           maxWidth: '1000px',
           margin: '150px auto 225px auto',
@@ -161,13 +171,7 @@ const TypingText = ({ text, getText }) => {
         >
           <Card.Body>
             <Card.Title>Words to type:</Card.Title>
-            <p
-              style={{
-                fontSize: '1.1rem',
-                display: 'flex',
-                flexDirection: 'column'
-              }}
-            >
+            <WordsColumn>
               {correct
                 .slice(inputWords.length, inputWords.length + 10)
                 .map((result, i) =>
@@ -200,14 +204,17 @@ const TypingText = ({ text, getText }) => {
                             ? 'green 2px solid'
                             : result === false
                             ? 'red 2px dashed'
-                            : null
+                            : null,
+                        maxWidth: '200px',
+                        alignSelf: 'center'
                       }}
                     >
                       {text[inputWords.length + i]}{' '}
                     </span>
                   )
                 )}
-            </p>
+              ...
+            </WordsColumn>
           </Card.Body>
         </Card>
         {/* <br /> */}
@@ -236,9 +243,11 @@ const TypingText = ({ text, getText }) => {
               <h5>Time left: {61 - timer}</h5>
             </>
           ) : !finished ? (
-            <Button variant="primary" onClick={() => setStarted(true)}>
-              Start
-            </Button>
+            <Centered>
+              <Button variant="primary" onClick={() => setStarted(true)}>
+                Start
+              </Button>
+            </Centered>
           ) : (
             <Results
               result={result}
@@ -247,7 +256,7 @@ const TypingText = ({ text, getText }) => {
             />
           )}
         </div>
-      </div>
+      </Display>
     </>
   );
 };
