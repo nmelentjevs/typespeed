@@ -20,6 +20,7 @@ const App = () => {
   const removeChars = text => {
     console.log('ok');
     const filtered = text.filter(word => {
+      word.replace(' ', '');
       return !word.includes('<p>') && !word.includes('</p>');
     });
     return filtered;
