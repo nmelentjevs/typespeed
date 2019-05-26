@@ -41,9 +41,16 @@ const TypingText = ({ text, getText }) => {
     if (textbox) {
       textbox.focus();
     }
-    if (timer === 10) {
+    if (timer === 30) {
       setResult({
-        wpm: Math.round((inputWords.length / timer) * 60),
+        wpm:
+          (Math.round(
+            correct.filter(result => {
+              return result === true;
+            }).length
+          ) /
+            timer) *
+          60,
         apm: Math.round((count / timer / 4.5) * 60),
         cpm: Math.round((count / timer) * 60)
       });
@@ -66,12 +73,24 @@ const TypingText = ({ text, getText }) => {
     text[inputWords.length].split('').map(letter => letters.push(letter));
     setCurrentWord(e.target.value);
     letters.map((letter, i) => {
-      return letterResult.push(
-        e.target.value.replace(' ', '')[i] === letters[i]
-      );
+      if (e.target.value.replace(' ', '')[i] === letters[i]) {
+        letterResult.push(true);
+      } else if (e.target.value.replace(' ', '')[i] === undefined) {
+        letterResult.push(0);
+      } else if (e.target.value.replace(' ', '')[i] !== letters[i]) {
+        letterResult.push(false);
+      }
+      return null;
     });
     setLetterCorrect(letterResult);
-    setCount(characterCount(inputWords));
+    let correctWords = [];
+    correct.map((word, i) => {
+      if (word === true) {
+        correctWords.push(inputWords[i]);
+      }
+      return null;
+    });
+    setCount(characterCount(correctWords));
   };
 
   const onKeyDown = e => {
@@ -112,9 +131,11 @@ const TypingText = ({ text, getText }) => {
 
   const characterCount = wordsArray => {
     let total = 0;
-    wordsArray.forEach(word => {
-      total += word.split('').length;
-    });
+    if (wordsArray !== []) {
+      wordsArray.forEach(word => {
+        total += word.split('').length;
+      });
+    }
     return total;
   };
 
@@ -152,7 +173,7 @@ const TypingText = ({ text, getText }) => {
       <Display
         style={{
           maxWidth: '1000px',
-          margin: '150px auto 225px auto',
+          margin: '0 auto 225px auto',
           // overflow: 'auto',
           maxHeight: '350px',
           lineHeight: '1.5rem',
@@ -165,7 +186,7 @@ const TypingText = ({ text, getText }) => {
         <Card
           border="light"
           style={{
-            width: '36rem',
+            width: '20rem',
             textAlign: 'center'
           }}
         >
@@ -187,8 +208,8 @@ const TypingText = ({ text, getText }) => {
                                 letterCorrect[index] === true
                                   ? 'green 2px solid'
                                   : letterCorrect[index] === false
-                                  ? 'red 2px dashed'
-                                  : null
+                                  ? 'red 2px solid'
+                                  : 'lightblue 2px solid'
                             }}
                           >
                             {letter}
@@ -218,9 +239,10 @@ const TypingText = ({ text, getText }) => {
           </Card.Body>
         </Card>
         {/* <br /> */}
-        <div>
+        <div style={{ margin: 'auto 0', maxWidth: '20rem' }}>
           {started && !finished ? (
             <>
+              <h5>Time left: {61 - timer}</h5>
               <Form.Group>
                 <h4>Type here: </h4>
                 <Form.Control
@@ -233,14 +255,13 @@ const TypingText = ({ text, getText }) => {
                   style={{ fontSize: '2rem' }}
                 />
               </Form.Group>
-              <h3 id="ok">
+              <h5 id="ok">
                 Words per minute: {Math.round((inputWords.length / timer) * 60)}{' '}
                 per minute
-              </h3>
-              <h3 id="ok">
+              </h5>
+              <h5 id="ok">
                 Characters per minute : {Math.round((count / timer) * 60)}{' '}
-              </h3>
-              <h5>Time left: {61 - timer}</h5>
+              </h5>
             </>
           ) : !finished ? (
             <Centered>
